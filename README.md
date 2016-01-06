@@ -7,8 +7,9 @@ Because the project today is rather large, this mini project will be short. We'r
 * Head over to your Mini Project from Day 1 (Todolist) and clone it.
 * Once you clone it, cd into the directory and run ```rm -rf .git``` to remove all the old git stuff.
 * If you'd like, fork this project then use ```git remote add origin https://github.com/USERNAME/react-mini3-todofire``` to link your code with github.
-* Run ```npm install``` to install all the proper dependencies.
+* Run ```npm install``` to install all the proper dependencies. (You can refer to this [`package.json` file](https://gist.github.com/jasonalmaturner/d163094eb61b1f6f4ead#file-package-json) as a reference)
 * Run ```npm install --save firebase``` to add firebase as a dependency.
+* Set up your `webpack.config.js` file. (You can refer to this[`webpack.config.js` file](https://gist.github.com/jasonalmaturner/d163094eb61b1f6f4ead#file-webpack-config-js))
 * run ```webpack -w``` to watch our file for changes.
 
 ####Step 2: Create a firebase
@@ -27,13 +28,13 @@ The very first thing we want to do is add a reference to our Firebase when our m
 
 The componentDidMount method should now look similar to this.
 ```javascript
-componentDidMount: function(){
-  this.firebaseRef = new Firebase("https://reactweek-todofire.firebaseio.com/todos");
-  this.firebaseRef.on('child_added', function(snapshot){
+componentDidMount() {
+  this.firebaseRef = new Firebase('https://react-todo.firebaseio.com/todos');
+  this.firebaseRef.on('child_added', (snapshot) => {
     this.setState({
-      list: this.state.list.concat([{key: snapshot.key(), val: snapshot.val()}])
-    })
-  }.bind(this));
+      list: this.state.list.concat([{key: snapshot.key(), val: snapshot.val()}]),
+    });
+  });
 }
 ```
 
@@ -49,23 +50,23 @@ We're not quite done though. We also need to set up a ```child_removed``` hook w
 
 Your componentDidMount method should now look like this,
 ```javascript
-componentDidMount: function(){
-  this.firebaseRef = new Firebase("https://reactweek-todofire.firebaseio.com/todos");
-  this.firebaseRef.on('child_added', function(snapshot){
+componentDidMount() {
+  this.firebaseRef = new Firebase('https://react-todo.firebaseio.com/todos');
+  this.firebaseRef.on('child_added', (snapshot) => {
     this.setState({
-      list: this.state.list.concat([{key: snapshot.key(), val: snapshot.val()}])
-    })
-  }.bind(this));
+      list: this.state.list.concat([{key: snapshot.key(), val: snapshot.val()}]),
+    });
+  });
 
-  this.firebaseRef.on('child_removed', function(snapshot){
+  this.firebaseRef.on('child_removed', (snapshot) => {
     var key = snapshot.key();
-    var newList = this.state.list.filter(function(item){
+    var newList = this.state.list.filter((item) => {
       return item.key !== key;
     });
     this.setState({
-      list: newList
+      list: newList,
     });
-  }.bind(this));
+  });
 }
 ```
 ####Step 4: Handle Add Item
@@ -77,7 +78,7 @@ The next method we need to modify is the handleAddItem method. Right now it's ju
 Your code should look like this.
 
 ```javascript
-handleAddItem: function(newItem){
+handleAddItem(newItem) {
   this.firebaseRef.push(newItem);
 }
 ```
@@ -93,7 +94,7 @@ Since we cached the firebase key on each object in our list array we can now use
 Your code should look like this,
 
 ```javascript
-handleRemoveItem: function(index){
+handleRemoveItem(index) {
   var item = this.state.list[index];
   this.firebaseRef.child(item.key).remove();
 }
@@ -105,8 +106,8 @@ Since we changed our list data structure earlier from being just an array or str
 * Use map to map over ```this.state.list``` so that you only pass List all of the ```.val``` properties on the list.
 Like this,
 
-```<List items={this.state.list.map(function(item){return item.val})} remove={this.handleRemoveItem}/>```
+```<List items={this.state.list.map((item) = > {return item.val})} remove={this.handleRemoveItem}/>```
 
 and that's it. Now our todo list is persisting our data with firebase.
 
-*It was a little annoying trying to keep our components state in sync with our firebase. Because of this, the Firebase devs made a nice Mixin you can use with React in order to keep both in sync. Check it out at [HERE](https://www.firebase.com/docs/web/libraries/react/?utm_source=reactfire)
+<!-- *It was a little annoying trying to keep our components state in sync with our firebase. Because of this, the Firebase devs made a nice Mixin you can use with React in order to keep both in sync. Check it out at [HERE](https://www.firebase.com/docs/web/libraries/react/?utm_source=reactfire) -->
